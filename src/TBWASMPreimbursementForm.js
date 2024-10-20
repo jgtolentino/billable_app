@@ -10,10 +10,10 @@ interface Expense {
 
 const categories = ['Food', 'Transportation', 'Accommodation', 'Miscellaneous'];
 
-const TBWASMPreimbursementForm = () => {
+const TBWASMPreimbursementForm: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [newExpense, setNewExpense] = useState<Expense>({
-    id: expenses.length + 1,
+    id: 0,
     date: '',
     category: '',
     amount: 0,
@@ -24,7 +24,7 @@ const TBWASMPreimbursementForm = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
+    if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'application/pdf') {
         setReceipt(file);
@@ -60,8 +60,15 @@ const TBWASMPreimbursementForm = () => {
             amount: data.amount,
             description: data.description,
           };
-          setNewExpense({ ...newExpense, ...extractedData });
-          setExpenses([...expenses, { ...newExpense, ...extractedData }]);
+          const newExpenseWithId = { ...newExpense, ...extractedData, id: expenses.length + 1 };
+          setExpenses([...expenses, newExpenseWithId]);
+          setNewExpense({
+            id: 0,
+            date: '',
+            category: '',
+            amount: 0,
+            description: '',
+          });
         })
         .catch((error) => {
           setError('Error uploading file. Please try again.');
