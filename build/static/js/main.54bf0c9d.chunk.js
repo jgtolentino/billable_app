@@ -1,2 +1,0 @@
-(this["webpackJsonpbillable-app"]=this["webpackJsonpbillable-app"]||[]).push([[0],{10:function(e,t,c){"use strict";c.r(t);var n=c(1),r=c.n(n),a=c(3),i=c.n(a),p=(c(8),c(0));var s=function(){return Object(p.jsx)("div",{className:"App",children:Object(p.jsx)("h1",{children:"Welcome to Your React App"})})};i.a.render(Object(p.jsx)(r.a.StrictMode,{children:Object(p.jsx)(s,{})}),document.getElementById("root"))},8:function(e,t,c){}},[[10,1,2]]]);
-//# sourceMappingURL=main.54bf0c9d.chunk.js.map
