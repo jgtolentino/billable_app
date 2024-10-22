@@ -14,6 +14,7 @@ const TBWASMPreimbursementForm = () => {
   const [receipt, setReceipt] = useState(null);
   const [receiptPreview, setReceiptPreview] = useState(null);
   const [error, setError] = useState(null);
+  const [extractedInfo, setExtractedInfo] = useState(null); // For displaying extracted info
 
   const handleReceiptChange = (e) => {
     if (e.target.files) {
@@ -22,9 +23,7 @@ const TBWASMPreimbursementForm = () => {
         setReceipt(file);
         const reader = new FileReader();
         reader.onload = (event) => {
-          if (event.target) {
-            setReceiptPreview(event.target.result);
-          }
+          setReceiptPreview(event.target.result);
         };
         reader.readAsDataURL(file);
       } else {
@@ -36,20 +35,21 @@ const TBWASMPreimbursementForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (receipt) {
+      const formData = new FormData();
+      formData.append('receipt', receipt);
+
+      // Simulating receipt processing
       setTimeout(() => {
         const extractedData = {
           date: new Date().toISOString().split('T')[0],
           category: 'Miscellaneous',
-          amount: 0,
+          amount: 100,
           description: 'Uploaded receipt',
         };
-
         setNewExpense({ ...newExpense, ...extractedData });
         setExpenses([...expenses, { ...newExpense, ...extractedData }]);
-        setError(null);
+        setExtractedInfo(extractedData); // Display extracted information
       }, 1000);
-    } else {
-      setError('Please upload a receipt before submitting.');
     }
   };
 
@@ -64,7 +64,7 @@ const TBWASMPreimbursementForm = () => {
         <div className="flex flex-wrap -mx-3 mb-2">
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="receipt">
-              Receipt
+              Upload Receipt:
             </label>
             <input
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -95,6 +95,18 @@ const TBWASMPreimbursementForm = () => {
           Upload Receipt
         </button>
       </form>
+
+      {/* Display Extracted Information */}
+      {extractedInfo && (
+        <div className="bg-gray-100 p-4 mb-4">
+          <h3 className="text-xl font-bold mb-2">Extracted Information:</h3>
+          <p>Date: {extractedInfo.date}</p>
+          <p>Category: {extractedInfo.category}</p>
+          <p>Amount: {extractedInfo.amount}</p>
+          <p>Description: {extractedInfo.description}</p>
+        </div>
+      )}
+
       <h2 className="text-2xl font-bold mb-4">Expenses</h2>
       <table className="w-full">
         <thead>
