@@ -1,20 +1,15 @@
 import React from 'react';
 import TBWASMPreimbursementForm from './TBWASMPreimbursementForm';
+import logo from './tbwa-logo.png';
 
 function App() {
   return (
     <div className="App">
-      <header style={{ textAlign: 'center', padding: '20px' }}>
-        <img
-          src="/public/tbwa-logo.png"  // Updated file name for the logo
-          alt="TBWA Logo"
-          style={{ width: '150px', marginBottom: '20px' }}
-        />
+      <header>
+        <img src={logo} alt="TBWA Logo" style={{ width: '100px', float: 'right' }} />
         <h1>TBWA\SMP Reimbursement Form</h1>
       </header>
-      <main>
-        <TBWASMPreimbursementForm />
-      </main>
+      <TBWASMPreimbursementForm />
     </div>
   );
 }
