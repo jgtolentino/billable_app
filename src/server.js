@@ -10,7 +10,7 @@ app.use(cors());
 // Set up multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, './uploads');
+    cb(null, './uploads'); // Ensure this folder exists
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
@@ -26,18 +26,17 @@ app.post('/upload', upload.single('receipt'), (req, res) => {
   // Perform OCR using Tesseract.js
   Tesseract.recognize(filePath, 'eng')
     .then(result => {
-      // Extract text data from receipt
-      const extractedText = result.data.text;
-
-      // Return data (you can parse this for specific information like date, amount, etc.)
-      res.json({
-        message: 'File uploaded and processed successfully',
-        text: extractedText,
-      });
+      const extractedData = {
+        text: result.data.text,
+        // You can implement additional parsing logic here for specific details
+      };
+      res.json(extractedData); // Send extracted data back to frontend
     })
     .catch(err => res.status(500).json({ message: 'OCR failed', error: err }));
 });
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

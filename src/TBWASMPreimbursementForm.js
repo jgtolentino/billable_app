@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import './App.css'; // Ensure this path is correct for your CSS file
 
-const categories = ['Food', 'Transportation', 'Accommodation', 'Miscellaneous'];
-
 const TBWASMPreimbursementForm = () => {
   const [expenses, setExpenses] = useState([]);
   const [newExpense, setNewExpense] = useState({
@@ -10,7 +8,7 @@ const TBWASMPreimbursementForm = () => {
     date: '',
     category: 'Miscellaneous',
     amount: 0,
-    description: 'Uploaded receipt',
+    description: '',
   });
   const [receipt, setReceipt] = useState(null);
   const [receiptPreview, setReceiptPreview] = useState(null);
@@ -39,17 +37,25 @@ const TBWASMPreimbursementForm = () => {
       const formData = new FormData();
       formData.append('receipt', receipt);
       
-      // Simulate the extracted data for the form
-      const simulatedData = {
-        date: new Date().toISOString().slice(0, 10),
-        category: 'Miscellaneous',
-        amount: 100,
-        description: 'Uploaded receipt',
-      };
-      
-      setNewExpense({ ...newExpense, ...simulatedData });
-      setExtractedInfo(simulatedData);
-      setExpenses([...expenses, { ...newExpense, ...simulatedData }]);
+      fetch('http://localhost:3000/upload', {
+        method: 'POST',
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const extractedData = {
+            date: 'Extracted Date', // You should parse the date from data.text
+            category: 'Extracted Category', // You can implement parsing logic
+            amount: 100, // Update with actual extracted amount
+            description: data.text,
+          };
+
+          setExtractedInfo(extractedData);
+          setExpenses([...expenses, { ...newExpense, ...extractedData }]);
+        })
+        .catch((error) => {
+          setError('Error uploading file. Please try again.');
+        });
     } else {
       setError('Please upload a valid receipt.');
     }
@@ -61,7 +67,6 @@ const TBWASMPreimbursementForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <img src="./tbwa-logo.png" alt="TBWA Logo" className="logo" />
       <h1 className="text-3xl font-bold mb-4">TBWA\SMP Reimbursement Form</h1>
       <form onSubmit={handleSubmit} className="mb-4">
         <label htmlFor="receipt">Upload Receipt:</label>
