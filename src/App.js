@@ -1,12 +1,12 @@
 import React from 'react';
 import TBWASMPreimbursementForm from './TBWASMPreimbursementForm';
-import logo from './tbwa-logo.png';
+import './App.css'; // Ensure you have your styles in App.css
 
 function App() {
   return (
     <div className="App">
-      <header>
-        <img src={logo} alt="TBWA Logo" style={{ width: '100px', float: 'right' }} />
+      <header className="App-header">
+        <img src="/tbwa-logo.png" alt="TBWA Logo" className="tbwa-logo" />
         <h1>TBWA\SMP Reimbursement Form</h1>
       </header>
       <TBWASMPreimbursementForm />
