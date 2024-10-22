@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import './App.css'; // Ensure this path is correct for your CSS file
+
+const categories = ['Food', 'Transportation', 'Accommodation', 'Miscellaneous'];
 
 const TBWASMPreimbursementForm = () => {
   const [expenses, setExpenses] = useState([]);
@@ -11,13 +14,13 @@ const TBWASMPreimbursementForm = () => {
   });
   const [receipt, setReceipt] = useState(null);
   const [receiptPreview, setReceiptPreview] = useState(null);
-  const [extractedData, setExtractedData] = useState(null);
   const [error, setError] = useState(null);
+  const [extractedInfo, setExtractedInfo] = useState(null);
 
   const handleReceiptChange = (e) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
+      if (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'application/pdf') {
         setReceipt(file);
         const reader = new FileReader();
         reader.onload = (event) => {
@@ -25,7 +28,7 @@ const TBWASMPreimbursementForm = () => {
         };
         reader.readAsDataURL(file);
       } else {
-        setError('Invalid file type. Please upload a PDF or image.');
+        setError('Invalid file type. Please upload a PNG, JPEG, or PDF file.');
       }
     }
   };
@@ -35,16 +38,18 @@ const TBWASMPreimbursementForm = () => {
     if (receipt) {
       const formData = new FormData();
       formData.append('receipt', receipt);
-      // Mock extract data (replace with actual server response)
-      const mockExtractedData = {
-        date: '2024-10-22',
+      
+      // Simulate the extracted data for the form
+      const simulatedData = {
+        date: new Date().toISOString().slice(0, 10),
         category: 'Miscellaneous',
         amount: 100,
         description: 'Uploaded receipt',
       };
-      setExtractedData(mockExtractedData);
-      setNewExpense({ ...newExpense, ...mockExtractedData });
-      setExpenses([...expenses, { ...newExpense, ...mockExtractedData }]);
+      
+      setNewExpense({ ...newExpense, ...simulatedData });
+      setExtractedInfo(simulatedData);
+      setExpenses([...expenses, { ...newExpense, ...simulatedData }]);
     } else {
       setError('Please upload a valid receipt.');
     }
@@ -56,35 +61,33 @@ const TBWASMPreimbursementForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+      <img src="./tbwa-logo.png" alt="TBWA Logo" className="logo" />
+      <h1 className="text-3xl font-bold mb-4">TBWA\SMP Reimbursement Form</h1>
       <form onSubmit={handleSubmit} className="mb-4">
-        <div className="mb-4">
-          <label>Upload Receipt:</label>
-          <input type="file" onChange={handleReceiptChange} />
-        </div>
+        <label htmlFor="receipt">Upload Receipt:</label>
+        <input type="file" onChange={handleReceiptChange} />
         {receiptPreview && (
           <div>
             <h3>Receipt Preview</h3>
-            <img src={receiptPreview} alt="Receipt Preview" style={{ width: '100px' }} />
+            <img src={receiptPreview} alt="Receipt Preview" className="receipt-preview" />
           </div>
         )}
         {error && <p className="text-red-500">{error}</p>}
-        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Upload Receipt
-        </button>
+        <button type="submit">Upload Receipt</button>
       </form>
-      
-      {extractedData && (
+
+      {extractedInfo && (
         <div>
-          <h3>Extracted Information:</h3>
-          <p>Date: {extractedData.date}</p>
-          <p>Category: {extractedData.category}</p>
-          <p>Amount: {extractedData.amount}</p>
-          <p>Description: {extractedData.description}</p>
+          <h2>Extracted Information:</h2>
+          <p>Date: {extractedInfo.date}</p>
+          <p>Category: {extractedInfo.category}</p>
+          <p>Amount: {extractedInfo.amount}</p>
+          <p>Description: {extractedInfo.description}</p>
         </div>
       )}
 
-      <h2 className="text-2xl font-bold mb-4">Expenses</h2>
-      <table className="w-full">
+      <h2>Expenses</h2>
+      <table>
         <thead>
           <tr>
             <th>Date</th>
@@ -102,9 +105,7 @@ const TBWASMPreimbursementForm = () => {
               <td>{expense.amount}</td>
               <td>{expense.description}</td>
               <td>
-                <button onClick={() => handleDelete(expense.id)} className="bg-red-500 text-white px-4 py-2">
-                  Delete
-                </button>
+                <button onClick={() => handleDelete(expense.id)}>Delete</button>
               </td>
             </tr>
           ))}
