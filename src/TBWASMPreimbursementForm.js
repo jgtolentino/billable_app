@@ -24,10 +24,12 @@ const TBWASMPreimbursementForm = () => {
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Handle changes in the receipt input
   const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      if (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'application/pdf') {
+    const file = e.target.files?.[0]; // Safely access the file
+    if (file) {
+      const validTypes = ['image/png', 'image/jpeg', 'application/pdf'];
+      if (validTypes.includes(file.type)) {
         setReceipt(file);
         const reader = new FileReader();
         reader.onload = (event) => {
@@ -42,26 +44,34 @@ const TBWASMPreimbursementForm = () => {
     }
   };
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (receipt) {
       const formData = new FormData();
       formData.append('receipt', receipt);
-      // Send the form data to the server for processing
+
+      // Replace with your actual server endpoint
       fetch('/api/upload', {
         method: 'POST',
         body: formData,
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
         .then((data) => {
           const extractedData = {
-            date: data.date,
-            category: data.category,
-            amount: data.amount,
-            description: data.description,
+            date: data.date || '', // Use fallback for safety
+            category: data.category || '',
+            amount: data.amount || 0,
+            description: data.description || 'Uploaded receipt',
           };
-          setNewExpense({ ...newExpense, ...extractedData });
-          setExpenses([...expenses, { ...newExpense, ...extractedData }]);
+          const expense = { ...extractedData, id: newExpense.id };
+          setExpenses([...expenses, expense]);
+          setNewExpense({ ...expense, id: expense.id + 1 }); // Increment ID for new expense
         })
         .catch((error) => {
           setError('Error uploading file. Please try again.');
@@ -69,6 +79,7 @@ const TBWASMPreimbursementForm = () => {
     }
   };
 
+  // Handle deleting an expense
   const handleDelete = (id: number) => {
     setExpenses(expenses.filter((expense) => expense.id !== id));
   };
