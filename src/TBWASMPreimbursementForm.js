@@ -54,7 +54,6 @@ const TBWASMPreimbursementForm = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          // Extract the necessary data from the response
           const extractedData = {
             date: data.date,
             category: data.category,
